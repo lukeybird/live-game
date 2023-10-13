@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETM</title>
+
+
+    <style>
+        /* Existing styles... */
+
+        @font-face {
+    font-family: 'player2';
+    src: url('P2/P2.ttf') format('truetype')
+    /* Add more formats if you have them, like .ttf, .eot, etc. */
+}
+
+        body, html {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+
+.background-video {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 15%;
+    z-index: -1; /* Ensures content is displayed above the video */
+}
+
+video {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+
+        body {
+    background-color: #151515; /* Dark background color */
+}
+
+        .title {
+        font-family: "player2", sans-serif;
+        font-size: 25px; /* Reduced font size */
+        margin: 20px auto; /* Center horizontally */
+        background-color: #000;
+        color: #00FF00; /* Green text color */
+        padding: 10px 0; /* Adjust padding for centering */
+        border: 2px solid #00FF00; /* Green border */
+        border-radius: 0px; /* Rounded corners */
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        width: 504px; /* Same width as the text box */
+        text-align: center; /* Center the text horizontally */
+    }
+    
+        .storyboard-container {
+            width: 504px; /* Adjust the width */
+            height: 450px; /* Adjust the height */
+            margin: 20px auto;
+            background-color: #000;
+            overflow: hidden;
+            border: 2px solid #00ff00; /* Dark border */
+        }
+    
+        .storyboard {
+        width: 100%;
+        height: 100%;
+        border: none;
+        padding: 20px;
+        background-color: #000;
+        color: #00FF00; /* Green text color */
+        font-family: "Courier New", monospace;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        box-sizing: border-box;
+        overflow: auto;
+        font-size: 22px;
+        }
+
+        /* Customize the scrollbar */
+        .storyboard::-webkit-scrollbar {
+            width: 12px; /* Adjust scrollbar width as needed */
+        }
+
+        .storyboard::-webkit-scrollbar-thumb {
+            background-color: #00FF00; /* Green thumb color */
+            border-radius: 6px; /* Rounded thumb corners */
+        }
+
+        .storyboard::-webkit-scrollbar-track {
+            background-color: #000; /* Black track color */
+        }
+
+    .decision-button {
+        display: inline-block;
+    background-color: #000; /* Green background color */
+    color: #00ff00; /* Black text color */
+    padding: 10px 20px;
+    border: 2px solid #00ff00; /* Dark border */
+    border-radius: 0px; /* No rounded corners */
+    cursor: pointer;
+    font-family: "player2", sans-serif; /* Match the title font */
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Display ellipsis for long text */
+    width: 170px; /* Set the width to 168 pixels */
+    }
+
+
+    .center {
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+}
+
+
+    </style>
+
+    <script>
+
+        // this is where all the variables being used for the game are being stored
+        var clickCount = 0;
+        // this is responsible in showing what page of the story you are on
+        var pageCount = 1; // originally named storyCount
+        var battleCount = 1;
+        // this is responsible for showing which button you pressed
+        var buttonPressed = 0; //can be 1, 2, or 3
+
+        // variables for certain tools
+        var attackOne = 0; // punch, upgrade to sword
+        var attackTwo = 2; // kick
+        var attackThree = -2; // slap, upgrade to crowbar
+
+        // tools, these will be a list of unlockable tools.
+        var crowbar = false;
+        var keys = 0;
+        var sword = false;
+
+        // This is a variable I haven't used yet but plan to
+        var characterHealth = 0;
+        var characterString = "";
+        var characterPower = "";
+
+        var enemyHealth = 0;
+        var enemyString = "";
+        var enemyPower = 0;
+
+        // This is a variable that saves text when saveText() function is called
+        var savedText = "";
+
+        // counts how many tries you've done
+        var tryCounter = 1;
+
+        //labrinth
+        var mazeCount = 0;
+
+        // if I'm honest I dn't think I need these but keeping them anyways
+        var button1 = document.getElementById("btn1");
+        var button2 = document.getElementById("btn2");
+        var button3 = document.getElementById("btn3");
+
+        // this is where all the functions are being stored
+
+        // This variable adds text to the end of the storyboard
+        function addText(newText) {
+            // Select the textarea element with the class "storyboard"
+            const textarea = document.querySelector('.storyboard');
+
+            // Check if the textarea element exists
+            if (textarea) {
+                // Update the value property with the new text
+                textarea.value += "\n" + "——————————————————————————————————"
+                textarea.value += "\n\n" + newText;
+                console.log("Storyboard text was added to " + newText);
+                textarea.scrollTop = textarea.scrollHeight;
+            } else {
+                console.error('Textarea not found.');
+            }
+
+            
+            
+        }
+
+        function addTextContinue(newText) {
+            // Select the textarea element with the class "storyboard"
+            const textarea = document.querySelector('.storyboard');
+
+            // Check if the textarea element exists
+            if (textarea) {
+                // Update the value property with the new text
+                //textarea.value += "\n" + "——————————————————————————————————"
+                textarea.value += "\n\n" + newText;
+                console.log("Storyboard text was continued to " + newText);
+                textarea.scrollTop = textarea.scrollHeight;
+            } else {
+                console.error('Textarea not found.');
+            }
+
+            
+            
+        }
+
+        function saveText() {
+            const textarea = document.querySelector('.storyboard');
+            savedText = textarea.value;
+            console.log("This text was saved:" + savedText);
+        }
+
+        function replaceText(newText) {
+
+            const textarea = document.querySelector('.storyboard');
+
+            if (textarea) {
+                // Update the value property with the new text
+                textarea.value = newText;
+                console.log("replaceText function changed storyboard text to: " + newText);
+            } else {
+                console.error('Textarea not found.');
+            }
+            
+        }
+
+        function whatTool(){
+            btnChange("punch","kick","slap");
+            if (crowbar) {
+                btnChange("punch","kick","crowbar");
+                attackThree = 5;
+            }
+            if (sword) {
+                btnChange("sword","kick","slap");
+                attackOne = 10;
+            }
+            if (crowbar && sword) {
+                btnChange("sword","kick","crowbar");
+            }
+        }
+
+
+
+        function error1() {
+            console.log("ERROR 1: storyPage(case: " + pageCount + ", buttonPressed: " + buttonPressed);
+        }
+
+        function handleButtonClick(buttonText) {
+            clickCount++;
+            buttonPressed = buttonText;
+            //console.log("Story Count was " + storyCount);
+            storyTime();
+        }
+
+        function btnChange(one,two,three) {
+            var button1 = document.getElementById("btn1");
+            button1.textContent = one;
+
+            var button2 = document.getElementById("btn2");
+            button2.textContent = two;
+
+            var button3 = document.getElementById("btn3");
+            button3.textContent = three;
+
+            console.log("button 1 changed to " + one + ".  " + "button 2 changed to " + two + ".  " + "button 3 changed to " + three + ".  ");
+        }
+        function tracking() {
+
+            console.log("!!! function tracking() has been called; pageCount: " + pageCount + ", buttonPressed: " + buttonPressed + " !!!");
+
+            //console.log("Success tracking is working...");
+            //console.log("storyCount is " + storyCount);
+            //console.log("Button pressed was " + buttonPressed);
+        }
+
+        function gameOver() {
+            btnChange("retry","try again","retry");
+            pageCount = 0;
+            crowbar = false;
+            keys = 0;
+            addText("    GAME OVER!!!  GAME OVER!!!");
+        }
+
+        function updateHealthBar(){
+            characterString = "";
+            enemyString = "";
+            for (i=0; i < characterHealth; i++) {
+                if (i == 0 || i == 20 || i == 40) {
+                    characterString += "\n/";
+                } else {
+                    characterString += "/";
+                }
+            }
+            for (i=0; i < enemyHealth; i++) {
+                if (i == 0 || i == 20 || i == 40) {
+                    enemyString += "\n/";
+                } else {
+                    enemyString += "/";
+                }
+            }
+        }
+
+        function countBlows(moreDamage) {
+            characterHealth -= enemyPower;
+            enemyHealth = enemyHealth - characterPower - moreDamage;
+        }
+
+        function enterBattle() {
+            whatTool();
+            console.log("enterBattle() called");
+            saveText();
+            replaceText(savedText);
+            updateHealthBar();
+            addText("\n\n    ENEMY HEALTH: " + enemyString + "\n\n\n\n    YOUR HEALTH: " + characterString);
+        }
+
+        function battleMode(extraDamage) {
+            console.log("battleMode() called");
+            replaceText(savedText);
+            countBlows(extraDamage);
+            updateHealthBar();
+            addText("\n\n    ENEMY HEALTH: " + enemyString + "\n\n\n\n    YOUR HEALTH: " + characterString);
+            if (characterHealth <= 0) {
+                addText("\n\n    Enemy beat you up!");
+                gameOver();
+            } else if (enemyHealth <= 0) {
+                addText("    You beat him up!");
+                pageCount++;
+                battleTime();
+            }
+        }
+
+        function mazeHelp() {
+            pageCount = 5;
+            if (mazeCount == 1) {
+                        addText("    This place looks very familar...\n\n    Wait is that the door we came in from? It is...");
+                    } else if (mazeCount > 1){
+                        addText("Oh! Just the door again, this place is confusing!");
+                    }
+        }
+
+        function congrats(string){
+            addText("CONGRADULATIONS! You have unlocked the " + string + "!!!");
+        }
+
+        function unlockItem(string) {
+
+            if (string == "CROWBAR") {
+                crowbar = true;
+                congrats(string);
+            } else if (string == "SWORD") {
+                sword = true;
+                congrats(string);
+            }
+            
+        }
+
+        function battleTime() {
+            console.log("battleTime was called with battleCount at " + battleCount);
+            switch (battleCount) {
+                case 1:
+                    addTextContinue("    Looks like he had a key.\n\n    CONGRADULATIONS! +1 KEY!!!");
+                    keys++;
+                    battleCount++;
+                    btnChange("Continue","Continue","Continue");
+                    break;
+                case 2:
+                    addTextContinue(" WINNER ° WINNER ° WINNER ° WINNER");
+                    battleCount++;
+                    btnChange("Continue","Continue","Continue");
+                    break;
+
+                    default:
+                        error1();
+            }
+
+    
+        }
+
+        function mazeTime() {
+            console.log("mazeTime() function was called with value " + pageCount);
+            switch (pageCount) {
+                case 5:
+                    mazeHelp();
+                    break;
+                case 14:
+                addText("    Something is written here\n            FL: " + mazeCount + " D: " + pageCount);
+                characterHealth = 20;
+                addText("Health restored to " + characterHealth);
+                break;
+                case 16:
+                addText("    Something is written here\n            FL: " + mazeCount + " D: " + pageCount);
+                if (!sword) {
+                    sword = true;
+                    unlockItem("SWORD");
+                } 
+                break;
+                default:
+                addText("    Something is written here\n            FL: " + mazeCount + " D: " + pageCount);
+            }
+        }
+
+    
+        function storyTime() {
+            console.log("function storyTime() has been called!");
+            tracking();
+            switch (pageCount) {
+                case 0:
+                    //gameover case
+                    tryCounter++;
+                    replaceText("    Let's try this again...\n\n    ATTEMPT NUMBER " + tryCounter + "\n\n    Cold dark room, where are you going to search?");
+                    btnChange("Pockets", "Walls", "Ground");
+                    crowbar = false;
+                    pageCount++;
+                break;
+                case 1:
+
+                    if (buttonPressed == 1) {
+                        addText("    You dig into your pockets, hoping to uncover even a shred of information, but your search yields nothing. Desperation sets in as you pat yourself down, searching for any clue, any sign of what's happening. Alas, your efforts prove futile.\n\n    As you explore further, you realize you're donning an oddly rigid uniform, reminiscent of scrubs. Its coarse texture adds to the discomfort of your situation, but it offers no insight into your surroundings.\n\n    There's nothing here to guide you, and the darkness remains an impenetrable shroud of mystery. It's clear you must redirect your search to another place.");
+                    } else if (buttonPressed == 2) {
+                        if (!crowbar) {
+                            addText("    Searching the walls you find what feels to be a crowbar.");
+                            unlockItem("CROWBAR");
+                            //crowbar = true;
+                            // HERE ^
+                            // code to update icon or baggage
+                        } else {
+                            addText("    You searched the cold walls but it was fruitless!\n\n    Try searching elsewhere.");
+                        }
+                    } else if (buttonPressed == 3) {
+                        if (crowbar) {
+                            addText("    You feel out the floors which are made of tiles. And after some time you notice a tile is loose.\n\n    You use the crowbar to pull up the loose tile revealing a ladder down. \n\n    You climb down into the hole to reveal a tunnel...\n\n    Down in the tunnels you see tracks heading northbound and southbound. And also a door which appears off to the side.\n\n    Now you must pick where you would like to explore next!");
+                            pageCount++;
+                            btnChange("Door", "N. Tracks", "S. Tracks");
+                        } else {
+                            pageCount++;
+                            addText("    Searching the tiles on the ground... One seems loose so we pop it open with our finger nails! \n\n    It reveals a hole with a ladder going down.\n\n    You climb down into the hole to reveal a tunnel...\n\n    Down in the tunnels you see tracks heading northbound and southbound. And also a door which appears off to the side.\n\n    Now you must pick where you would like to explore next!");
+                            btnChange("Door", "N. Tracks", "S. Tracks");
+                        }
+                    } else {
+                        error1();
+                    }
+
+                    break;
+                case 2:
+
+                    if (buttonPressed == 1) {
+                        addText("    I have a feeling the door was a good idea...\n\n    However a security guard asks who you are and what you are doing there!\n\n    Security guard immediately gets hostile...\n\n    Into battle we go!");
+                        //whatTool(); now calling in enterBattle();
+                        characterHealth = 20;
+                        characterPower = 5;
+                        enemyHealth = 40;
+                        enemyPower = 3;
+                        pageCount++;
+                        enterBattle();
+
+                    } else if (buttonPressed == 2) {
+                        addText("    While walking down the tracks a train appears out of nowhere!");
+                        gameOver();
+                    } else if (buttonPressed == 3) {
+                        addText("    While walking down the tracks a train appears out of nowhere!");
+                        gameOver();
+                    } else {
+                        error1();
+                    }
+                    
+                    break;
+                case 3:
+                    if (buttonPressed == 1) {
+                        //punch
+                        battleMode(attackOne);
+                    } else if (buttonPressed == 2) {
+                        //kick
+                        battleMode(attackTwo);
+                    } else if (buttonPressed == 3) {
+                        //crowbar or slap
+                        
+                            battleMode(attackThree);
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 4:
+                    pageCount++;
+                    if (mazeCount == 0) {
+                        addText("    Looking around you see that the place you just entered seems to be a labrinth of some kind.\n\n    Where should we go?");
+                    } else if (mazeCount == 1) {
+                        addText("    This place looks very familar...\n\n    Wait is that the door we came in from? It is... OO");
+                    } else {
+                        addText("Oh! Just the door again, this place is confusing!");
+                    }
+                    btnChange("Left","Middle", "right");
+                    break;
+                case 5:
+                        mazeCount++;
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: 1 D: 3");
+                        pageCount = 6;
+                        mazeTime();
+                    } else if (buttonPressed == 2) {
+                        //addText("    Something is written here\n            FL: 3 D: 8");
+                        pageCount = 7;
+                        mazeTime();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 6 D: 14");
+                        pageCount = 8;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 6:
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: 3 D: 1");
+                        mazeHelp();
+                    } else if (buttonPressed == 2) {
+                        //addText("    Something is written here\n            FL: 5 D: 14");
+                        pageCount = 7;
+                        mazeTime();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 4 D: 57");
+                        pageCount = 9;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 7:
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: 3 D: 12");
+                        pageCount = 6;
+                        mazeTime();
+                    } else if (buttonPressed == 2) {
+                        //addText("    Something is written here\n            FL: 2 D: 12");
+                        pageCount = 8;
+                        mazeTime();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 67 D: 8");
+                        pageCount = 10;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 8:
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: 6 D: 12");
+                        mazeHelp();
+                    } else if (buttonPressed == 2) {
+                        //addText("    Something is written here\n            FL: 6 D: 78");
+                        pageCount = 7;
+                        mazeTime();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 112 D: 11");
+                        pageCount = 11;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 9:
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: 8 D: 0");
+                        mazeHelp();
+                    } else if (buttonPressed == 2) {
+                        //addText("    Something is written here\n            FL: 6 D: 13");
+                        pageCount = 11;
+                        mazeTime();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 777 D: 9");
+                        pageCount = 8;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 10:
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: 12 D: 8");
+                        pageCount = 9;
+                        mazeTime();
+                    } else if (buttonPressed == 2) {
+                        //addText("    Something is written here\n            FL: 0 D: 0");
+                        pageCount = 11;
+                        mazeTime();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 00 D: 00");
+                        pageCount = 12;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 11:
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: 12 D: 1");
+                        mazeHelp();
+                    } else if (buttonPressed == 2) {
+                        //addText("    Something is written here\n            FL: 56 D: 1");
+                        pageCount = 6;
+                        mazeTime();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 5 D: 6");
+                        pageCount = 9;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 12:
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: 12 D: 4");
+                        pageCount = 9;
+                        mazeTime();
+                    } else if (buttonPressed == 2) {
+                        //addText("    Something is written here\n            FL: 8 D: 16");
+                        pageCount = 11;
+                        mazeTime();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 1 D: -1");
+                        pageCount = 13;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 13:
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: null D: niffy");
+                        pageCount = 14;
+                        mazeTime();
+                    } else if (buttonPressed == 2) {
+                        //addText("    Something is written here\n            FL: 9 D: 8");
+                        pageCount = 15;
+                        mazeTime();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 64 D: 28");
+                        pageCount = 16;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 14:
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: 8 D: 15");
+                        mazeHelp();
+                    } else if (buttonPressed == 2) {
+                        //addText("    Something is written here\n            FL: 7 D: 12");
+                        pageCount = 16;
+                        mazeTime();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 12 D: 6");
+                        pageCount = 6;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 15:
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: 3 D: 0");
+                        mazeHelp();
+                    } else if (buttonPressed == 2) {
+                        addText("Click Count: " + clickCount);
+                        //addText(" WINNER ° WINNER ° WINNER ° WINNER");
+                        if (clickCount < 20) {
+                            addText("Click Count: " + clickCount);
+                            let funnyVar = 25 - clickCount;
+                            addTextContinue("Because your click count is less than 20 we are giving you plus " + funnyVar + " health!");
+                            characterHealth+=funnyVar;
+                            addText("Player health: " + characterHealth);
+                        }
+                        addText("     BOSS ° BOSS ° BOSS ° BOSS");
+                        //btnChange("CONTINUE","CONTINUE","CONTINUE");
+                        pageCount = 17;
+                        enemyHealth = 50;
+                        enterBattle();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 0 D: 0");
+                        pageCount = 13;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 16:
+                    if (buttonPressed == 1) {
+                        //addText("    Something is written here\n            FL: 0 D: 0");
+                        mazeHelp();
+                    } else if (buttonPressed == 2) {
+                        //addText("    Something is written here\n            FL: 0 D: 0");
+                        pageCount = 14;
+                        mazeTime();
+                    } else if (buttonPressed == 3) {
+                        //addText("    Something is written here\n            FL: 0 D: 0");
+                        pageCount = 8;
+                        mazeTime();
+                    } else {
+                        error1();
+                    }
+                    break;
+                case 17:
+                    if (buttonPressed == 1) {
+                        //punch or sword
+                        battleMode(attackOne);
+                    } else if (buttonPressed == 2) {
+                        //kick
+                        battleMode(attackTwo);
+                    } else if (buttonPressed == 3) {
+                        //crowbar or slap
+                        battleMode(attackThree);
+                    } else {
+                        error1();
+                    }
+                    break;
+                default:
+                    error1();
+        }
+        }
+
+    </script>
+    
+    
+</head>
+<body>
+    <div class="background-video">
+        <video autoplay muted loop>
+            <source src="matrix.mp4" type="video/mp4">
+            <!-- Add additional source elements for other video formats if needed -->
+            Your browser does not support the video tag.
+        </video>
+        <audio autoplay loop>
+            <source src="music.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        
+        <!-- Your other webpage content goes here -->
+    </div>
+    
+    <div class="title">Escape The Matrix</div>
+    <div class="storyboard-container">
+        <textarea class="storyboard" readonly  >
+    You awaken in a pitch-black room, your senses shrouded in an impenetrable veil of darkness. As consciousness slowly seeps in, a palpable sense of disorientation washes over you. You reach out, but your hands find nothing but cool, empty air.
+
+    Panic flares briefly, only to be quelled by the realization that you can still draw breath, though the air feels strangely stagnant. In the absence of sight, your other senses heighten—the faint echoes of distant sounds, the musty scent of dampness, and the cool, almost metallic taste of uncertainty on your tongue. It's clear that you're in a place unfamiliar, mysterious, and, for the moment, enigmatically devoid of light.
+
+    NOW! In the darkness you must pick where you want to search.
+        </textarea>
+    </div>
+    <div class="center">
+        <button id="btn1" onclick="handleButtonClick(1)" class="decision-button">pockets</button>
+        <button id="btn2" onclick="handleButtonClick(2)" class="decision-button">walls</button>
+        <button id="btn3" onclick="handleButtonClick(3)" class="decision-button">ground</button>
+    </div>
+    </div>
+</body>
+</html>
