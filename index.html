@@ -173,7 +173,24 @@ video {
 
     <script>
 
- if (window.innerWidth > 500) {
+     window.addEventListener('resize', function() {
+    var width = window.innerWidth; // or use any of the other methods
+    // Check width and perform actions
+
+      if (width > 500px) {
+       button1.style.width = '170px';
+  button2.style.width = '170px';
+  button3.style.width = '170px';
+      } else {
+       button1.style.width = '103px';
+  button2.style.width = '103px';
+  button3.style.width = '103px';
+      }
+       
+});
+
+
+ /*if (window.innerWidth > 500) {
     // The viewport is wider than 500px
     // Place your code for this condition here
     console.log("Viewport is wider than 500px");
@@ -191,7 +208,7 @@ video {
    button1.style.width = '103px';
   button2.style.width = '103px';
   button3.style.width = '103px';
-}
+}*/
 
      
 // testing stuff
