@@ -17,9 +17,10 @@
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
-    display: flex;
+    display: none;
     justify-content: center;
     align-items: center;
+    z-index: 1000; /* Ensure it's above other elements */
 }
 
 #popupContent {
@@ -27,12 +28,23 @@
     padding: 20px;
     border-radius: 5px;
     text-align: center;
+    width: 80%; /* Adjust as needed */
+    max-width: 600px; /* Adjust as needed */
 }
 
 #popupImage {
-    width: 80%;
+    width: 100%;
     height: auto;
     margin-bottom: 20px;
+}
+
+#popupContainer button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007BFF; /* Same as other buttons */
+    color: white;
+    border: none;
+    cursor: pointer;
 }
 
 
