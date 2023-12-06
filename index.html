@@ -190,6 +190,23 @@ video {
             
         }
 
+        // Function to add an image to a specified element
+        function addImage(targetElementId, imageUrl) {
+            // Create a new image element
+            var img = document.createElement("img");
+    
+            // Set the source of the image
+            img.src = imageUrl;
+    
+            // Append the image to the target element
+            var targetElement = document.getElementById(targetElementId);
+            if (targetElement) {
+                targetElement.appendChild(img);
+            } else {
+                console.error("Target element not found");
+            }
+        }
+
         function addTextContinue(newText) {
             // Select the textarea element with the class "storyboard"
             const textarea = document.querySelector('.storyboard');
