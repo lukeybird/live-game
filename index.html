@@ -223,6 +223,10 @@ function hidePopup() {
         //labrinth
         var mazeCount = 0;
 
+        // for final score
+
+        var finalScore = 0;
+
         // this is where all the functions are being stored
 
         var button1 = document.getElementById("btn1");
@@ -247,6 +251,11 @@ function hidePopup() {
 
             
             
+        }
+
+        function calculateFinalScore(){
+            finalScore = 100 - clickCount;
+            finalScore = finalScore * characterHealth;
         }
 
         // Function to add an image to a specified element
@@ -450,6 +459,8 @@ function hidePopup() {
                 case 2:
                     addTextContinue(" WINNER ° WINNER ° WINNER ° WINNER");
                     addText("Click Continue for secret QR code!");
+                    calculateFinalScore();
+                    addText("Your score is " + finalScore + "!");
                     battleCount++;
                     btnChange("Continue","Continue","Continue");
                     break;
