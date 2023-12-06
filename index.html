@@ -172,6 +172,28 @@ video {
     </style>
 
     <script>
+
+ if (window.innerWidth > 500) {
+    // The viewport is wider than 500px
+    // Place your code for this condition here
+    console.log("Viewport is wider than 500px");
+
+ // Select all elements with the class 'decision-button'
+var buttons = document.querySelectorAll('.decision-button');
+
+// Loop through the NodeList of selected elements and apply the new style
+buttons.forEach(function(button) {
+    button.style.width = '170px';
+});
+
+  
+} else {
+    // The viewport is 500px wide or narrower
+    // Place your code for this condition here
+    console.log("Viewport is 500px wide or narrower");
+}
+
+     
 // testing stuff
         function showPopup(imageUrl) {
     var popupImage = document.getElementById("popupImage");
